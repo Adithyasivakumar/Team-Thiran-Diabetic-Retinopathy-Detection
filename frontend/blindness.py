@@ -4,16 +4,20 @@ from tkinter.ttk import *
 from tkinter import messagebox
 from PIL import Image
 import os
+import sys
+
+# Add parent directory to Python path to enable imports from organized structure
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import mysql.connector
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 import mysql.connector as sk
-from model import *
-from send_sms import *
-from report_generator import create_report
-from pdf_report import create_pdf_report
-from report_verification_dialog import show_verification_dialog
-from send_whatsapp import send_report_whatsapp
+from backend.model import *
+from messaging.send_sms import *
+from reports.report_generator import create_report
+from reports.pdf_report import create_pdf_report
+from frontend.report_verification_dialog import show_verification_dialog
+from messaging.send_whatsapp import send_report_whatsapp
 print('GUI SYSTEM STARTED...')
 #---------------------------------------------------------------------------------
 
@@ -238,4 +242,5 @@ button2.grid(padx=10, pady=20, row=2, column=3)
 # DELETE FROM your_table WHERE id = $row.id and state = 'PROCESSING' LIMIT 1;
 # }
 
-root.mainloop()
+if __name__ == '__main__':
+    root.mainloop()

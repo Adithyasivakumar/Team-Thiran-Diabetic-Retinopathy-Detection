@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).parent
+project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 def test_report_generation():
@@ -21,7 +21,7 @@ def test_report_generation():
     # Test 1: Report Generator
     print("\n1. Testing Report Generation Module...")
     try:
-        from report_generator import create_report, MedicalReportGenerator
+        from reports.report_generator import create_report, MedicalReportGenerator
         
         report = create_report(
             username="test_patient",
@@ -44,7 +44,7 @@ def test_report_generation():
     # Test 2: PDF Generation
     print("\n2. Testing PDF Report Generation...")
     try:
-        from pdf_report import create_pdf_report
+        from reports.pdf_report import create_pdf_report
         
         pdf_path = create_pdf_report(report, image_path=None)
         
@@ -79,7 +79,7 @@ def test_report_generation():
     # Test 4: Verification Dialog Import
     print("\n4. Testing Report Verification Dialog...")
     try:
-        from report_verification_dialog import show_verification_dialog
+        from frontend.report_verification_dialog import show_verification_dialog
         print("   ✅ Verification dialog module imported successfully")
         
     except Exception as e:
@@ -89,8 +89,8 @@ def test_report_generation():
     # Test 5: Send Modules
     print("\n5. Testing Send Modules (Import Only)...")
     try:
-        from send_sms import send_report_sms
-        from send_whatsapp import send_report_whatsapp
+        from messaging.send_sms import send_report_sms
+        from messaging.send_whatsapp import send_report_whatsapp
         
         print("   ✅ SMS module imported successfully")
         print("   ✅ WhatsApp module imported successfully")

@@ -2,11 +2,16 @@
 """
 Diagnostic script to check model predictions
 """
+import sys
+import os
+
+# Add parent directory to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import torch
 import numpy as np
-from model import model, test_transforms, classes
+from backend.model import model, test_transforms, classes
 from PIL import Image
-import sys
 
 print("Model Diagnostic Test")
 print("=" * 50)

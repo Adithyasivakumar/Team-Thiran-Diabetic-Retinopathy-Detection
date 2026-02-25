@@ -1,12 +1,17 @@
 # Ignore large datasets and temporary files
 dataset/
-reports/
+reports/generated_reports/
 *.pt
 *.pkl
 *.csv
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.Python
 *.log
 *.tmp
 .DS_Store
 venv/
 .env
+.vscode/

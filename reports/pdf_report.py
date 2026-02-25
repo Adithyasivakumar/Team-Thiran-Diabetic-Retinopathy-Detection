@@ -14,13 +14,18 @@ import os
 class PDFReportGenerator:
     """Generate professional medical PDF reports"""
     
-    def __init__(self, output_dir="reports"):
+    def __init__(self, output_dir=None):
         """
         Initialize PDF generator
         
         Args:
-            output_dir: Directory to store generated PDFs
+            output_dir: Directory to store generated PDFs (defaults to project root/reports/generated_reports)
         """
+        if output_dir is None:
+            # Use project root/reports/generated_reports as default
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            output_dir = os.path.join(project_root, 'reports', 'generated_reports')
+        
         self.output_dir = output_dir
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -239,14 +244,14 @@ class PDFReportGenerator:
         return filepath
 
 
-def create_pdf_report(report_data, image_path=None, output_dir="reports"):
+def create_pdf_report(report_data, image_path=None, output_dir=None):
     """
     Convenience function to create PDF report
     
     Args:
         report_data: Dictionary with report information
         image_path: Optional path to retinal image
-        output_dir: Directory to save PDF
+        output_dir: Directory to save PDF (defaults to project root/reports/generated_reports)
     
     Returns:
         str: Path to generated PDF file
