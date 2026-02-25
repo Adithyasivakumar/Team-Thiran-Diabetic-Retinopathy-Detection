@@ -1,5 +1,6 @@
 # Ignore large datasets and temporary files
 dataset/
+reports/
 *.pt
 *.pkl
 *.csv
@@ -8,3 +9,4 @@ __pycache__/
 *.tmp
 .DS_Store
 venv/
+.env

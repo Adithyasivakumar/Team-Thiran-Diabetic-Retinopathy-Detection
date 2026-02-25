@@ -13,3 +13,4 @@ torch==1.13.1
 torchvision==0.3.0
 twilio>=8.0.0
 mysql-connector-python>=8.0.0
+reportlab>=3.6.0

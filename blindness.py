@@ -10,6 +10,10 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 import mysql.connector as sk
 from model import *
 from send_sms import *
+from report_generator import create_report
+from pdf_report import create_pdf_report
+from report_verification_dialog import show_verification_dialog
+from send_whatsapp import send_report_whatsapp
 print('GUI SYSTEM STARTED...')
 #---------------------------------------------------------------------------------
 
@@ -43,34 +47,96 @@ def OpenFile():
     username = box1.get()
     if y:
         try:
+            # File selection dialog
             a = askopenfilename()
-            print(a)
+            if not a:  # User cancelled
+                return
+            
+            print(f"Analyzing image: {a}")
+            messagebox.showinfo("Processing", "Processing image... Please wait.")
+            
+            # Get model prediction
             value, classes = main(a)
-            messagebox.showinfo("your report", ("Predicted Label is ", value, "\nPredicted Class is ", classes))
-
+            
+            # Generate professional medical report
+            print("Generating medical report...")
+            report = create_report(
+                username=username,
+                severity_level=value,
+                confidence_score=float(value) * 20,  # Approximate confidence
+                image_path=a,
+                age="N/A",
+                gender="N/A"
+            )
+            
+            # Generate PDF report
+            print("Creating PDF report...")
+            pdf_path = create_pdf_report(report, image_path=a)
+            print(f"✅ PDF created: {pdf_path}")
+            
+            # Show initial prediction
+            messagebox.showinfo(
+                "Detection Complete",
+                f"DR Classification: {classes}\nSeverity Level: {value}\n\n"
+                f"Please review the detailed report in the next screen."
+            )
+            
+            # Show verification dialog
+            print("Showing verification dialog...")
+            result = show_verification_dialog(root, report, pdf_path)
+            
+            if result and result.get('verified'):
+                # User verified - proceed with sending
+                send_method = result.get('method', 'both')
+                
+                # Get recipient phone number from environment or database
+                recipient_phone = os.getenv('RECIPIENT_PHONE', '+919043890506')
+                
+                # Get SMS summary and WhatsApp text
+                from report_generator import MedicalReportGenerator
+                generator = MedicalReportGenerator(username, username, "N/A", "N/A")
+                sms_summary = generator.get_report_summary(report)
+                whatsapp_text = generator.get_report_text(report)
+                
+                # Send based on selected method
+                if send_method in ['sms', 'both']:
+                    print("Sending SMS...")
+                    send_report_sms(recipient_phone, sms_summary)
+                
+                if send_method in ['whatsapp', 'both']:
+                    print("Sending WhatsApp...")
+                    send_report_whatsapp(recipient_phone, whatsapp_text, pdf_path)
+                
+                messagebox.showinfo(
+                    "Report Sent",
+                    f"✓ Medical report sent successfully via {send_method.upper()}!\n\n"
+                    f"Report ID: {report['report_id']}\n"
+                    f"PDF saved: {pdf_path}"
+                )
+            else:
+                # User cancelled
+                messagebox.showinfo("Cancelled", "Report sending cancelled by user.")
+            
+            # Update database
             query = "UPDATE THEGREAT SET PREDICT = %s WHERE USERNAME = %s"
             sql.execute(query, (value, username))
-            #print(query)
             connection.commit()
-
-            #------********************Send SMS notification to patient
-            send(value, classes)
-            #------*********************************************************
+            
+            # Display analyzed image
             image = Image.open(a)
-            # plotting image
             file = image.convert('RGB')
             plt.imshow(np.array(file))
-            plt.title(f'your report is label : {value} class : {classes}')
+            plt.title(f'DR Detection Result: {classes} (Level {value})')
             plt.show()
-            #print(image)
-            print('Thanks for using the system !')
-            #fn, text = os.path.splitext(a) #fn stands for filename
+            
+            print('✅ Analysis complete! Thanks for using the system!')
+            
         except Exception as error:
-            print("File not selected ! Exiting..., Please try again")
-
+            print(f"Error: {error}")
+            messagebox.showerror("Error", "File processing failed. Please try again.")
 
     else:
-        messagebox.showinfo("Hello Sir", "You need to Login first")
+        messagebox.showinfo("Login Required", "Please login first to upload images.")
 
 
 x = 0
