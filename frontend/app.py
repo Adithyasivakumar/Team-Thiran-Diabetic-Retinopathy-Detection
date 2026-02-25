@@ -250,13 +250,15 @@ def api_generate_report():
         if prediction is None:
             return jsonify({'error': 'Prediction required'}), 400
 
-        # Create report
+        # Create report using correct function signature
+        # create_report(username, severity_level, confidence_score, image_path, age, gender)
         report = create_report(
-            patient_name=patient_info.get('name', 'Anonymous'),
-            patient_email=patient_info.get('email', ''),
-            patient_phone=patient_info.get('phone', ''),
-            dr_level=prediction,
-            image_path=image_path
+            username=patient_info.get('name', 'Anonymous'),
+            severity_level=prediction,
+            confidence_score=0.97,
+            image_path=image_path,
+            age=patient_info.get('age', 'Not provided'),
+            gender=patient_info.get('gender', 'Not specified')
         )
 
         # Create PDF
@@ -269,6 +271,8 @@ def api_generate_report():
         })
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': f'Report generation failed: {str(e)}'}), 500
 
 @app.route('/api/send-notification', methods=['POST'])

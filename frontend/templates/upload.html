@@ -84,6 +84,21 @@
                                 <input type="tel" class="form-control" id="patientPhone" placeholder="Phone (with country code)">
                             </div>
                             <div class="form-group">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" id="patientAge" placeholder="Age" min="0" max="150">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" id="patientGender">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">Preferred Notification</label>
                                 <select class="form-select" id="notificationMethod">
                                     <option value="">-- Choose Option --</option>

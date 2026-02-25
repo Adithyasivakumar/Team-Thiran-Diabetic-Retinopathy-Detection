@@ -131,6 +131,9 @@ function uploadImage(formData) {
 }
 
 function displayResults(data) {
+    // Hide upload area after successful upload
+    uploadArea.style.display = 'none';
+    
     // Display image
     previewImage.src = 'data:image/png;base64,' + data.thumbnail;
 
@@ -173,7 +176,9 @@ function generateReport() {
     const patientInfo = {
         name: document.getElementById('patientName').value || 'Anonymous',
         email: document.getElementById('patientEmail').value || '',
-        phone: document.getElementById('patientPhone').value || ''
+        phone: document.getElementById('patientPhone').value || '',
+        age: document.getElementById('patientAge').value || '',
+        gender: document.getElementById('patientGender').value || ''
     };
 
     // Show loading
@@ -319,19 +324,29 @@ function closeModal() {
 }
 
 function resetAnalysis() {
+    // Reset all form data
     fileInput.value = '';
     resultsCard.classList.add('hidden');
     progressContainer.classList.add('hidden');
+    uploadArea.style.display = 'flex';
+    errorAlert.classList.add('hidden');
     document.getElementById('patientName').value = '';
     document.getElementById('patientEmail').value = '';
     document.getElementById('patientPhone').value = '';
+    document.getElementById('patientAge').value = '';
+    document.getElementById('patientGender').value = '';
     document.getElementById('notificationMethod').value = '';
+    previewImage.src = '';
 
+    // Reset analysis data
     currentAnalysis = {
         prediction: null,
         imagePath: null,
         report: null
     };
+    
+    // Scroll back to upload area
+    uploadArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function showError(message) {
