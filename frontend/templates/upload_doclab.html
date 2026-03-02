@@ -298,7 +298,7 @@
     reader.onload = (e) => {
       document.getElementById('previewImage').src = e.target.result;
     };
-    reader.readAsURL(file);
+    reader.readAsDataURL(file);
 
     // Set severity badge
     const severityColors = {
@@ -385,7 +385,7 @@
   }
 
   function downloadReport(reportId) {
-    window.location.href = `{{ url_for('download_report', report_id='') }}${encodeURIComponent(reportId)}`;
+    window.location.href = `{{ url_for('api_download_report', report_id='') }}${encodeURIComponent(reportId)}`;
   }
 
   function uploadAnother() {
