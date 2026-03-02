@@ -35,12 +35,21 @@ class WhatsAppReportSender:
             str: Message SID on success, None on failure
         """
         try:
-            # Ensure phone number is properly formatted
-            if not patient_phone.startswith('+'):
-                if patient_phone.startswith('91') and len(patient_phone) == 12:
-                    patient_phone = '+' + patient_phone
-                elif len(patient_phone) == 10:
-                    patient_phone = '+91' + patient_phone
+            # Normalize phone number (strip spaces/dashes and apply country code)
+            cleaned = ''.join(ch for ch in patient_phone.strip() if ch.isdigit() or ch == '+')
+            if cleaned.startswith('+'):
+                digits = '+' + ''.join(ch for ch in cleaned if ch.isdigit())
+            else:
+                digits = ''.join(ch for ch in cleaned if ch.isdigit())
+
+            if digits.startswith('+'):
+                patient_phone = digits
+            elif digits.startswith('91') and len(digits) == 12:
+                patient_phone = '+' + digits
+            elif len(digits) == 10:
+                patient_phone = '+91' + digits
+            else:
+                patient_phone = digits
             
             # Format WhatsApp numbers
             to_whatsapp = f"whatsapp:{patient_phone}"

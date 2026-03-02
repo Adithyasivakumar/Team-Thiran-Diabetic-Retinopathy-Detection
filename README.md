@@ -36,8 +36,8 @@ By combining data-driven insights with medical imaging, the project demonstrates
 We have implemented a Deep Learning classification system using CNN pretrained model ResNet152 to classify severity levels of DR ranging from 0 (NO DR) to 4 (Proliferative DR).   
 This is a collaborative project by Team Thiran, consisting of four members working on various aspects including model development, training, testing, database integration, and GUI development.
 Our approach leverages transfer learning with ResNet152, taking advantage of pre-trained ImageNet weights and fine-tuning them for diabetic retinopathy detection.    
-The system features a GUI-based interface built with Tkinter and uses MySQL database to securely maintain and store prediction records with user authentication.   
-Twilio API integration enables SMS connectivity for patient notifications, ensuring timely communication of diagnostic results.       
+The system features a GUI-based interface built with Tkinter and a web-based interface built with Flask, and uses MySQL database to securely maintain and store prediction records with user authentication.   
+For investor/demo reliability, the current web build focuses on core medical workflow (prediction + professional PDF reporting). Messaging integrations are kept modular for future activation.       
 
 # Summary of Technologies used in this project :       
 | Dev Env. | Framework/ library/ languages |
@@ -46,7 +46,7 @@ Twilio API integration enables SMS connectivity for patient notifications, ensur
 | Frontend development | Tkinter (Python GUI toolkit) |
 | Database connectivity | MySQL Server |
 | Programming Languages | Python, SQL |
-| API | Twilio cloud API|      
+| API | Twilio cloud API (optional, modular)|      
 
 # Data visualization :     
 Input data (raw) is like this -     
@@ -63,6 +63,49 @@ I have only shown below the main layers of resnet and each of the 'layer1', 'lay
 
 # Getting Started :       
 Refer to [GettingStarted.md](GettingStarted.md) for detailed setup and installation instructions.
+
+## Showcase Mode (Recommended for Demo)
+
+For investor demonstrations, use this stable web flow:
+
+1. Login to dashboard
+2. Upload retinal image
+3. Review DR severity and confidence
+4. Generate report
+5. Download PDF
+
+This mode avoids external messaging dependency during live demos and keeps the product professional and reliable.
+
+## Deployment (Flask Web App)
+
+### 1) Prepare repository
+
+- Ensure `requirements.txt` is updated
+- Commit and push code to GitHub
+
+### 2) Recommended host: Render (student-friendly)
+
+1. Sign in to Render and create **New Web Service**
+2. Connect your GitHub repository
+3. Set:
+	- **Build Command:** `pip install -r requirements.txt`
+	- **Start Command:** `gunicorn --chdir frontend app:app`
+4. Add environment variables from your `.env` (minimum):
+	- `SECRET_KEY`
+	- `DB_HOST`
+	- `DB_USER`
+	- `DB_PASSWORD`
+	- `DB_NAME`
+5. Deploy and test:
+	- Login
+	- Upload image
+	- Generate report
+	- Download PDF
+
+### 3) Backup plan for showcase day
+
+- Keep local fallback ready with: `./run_web.sh`
+- Keep 2-3 tested retinal sample images ready for predictable demo output
 
 ## Some snaps :     
 ![images/gui1.JPG](images/gui1.JPG)

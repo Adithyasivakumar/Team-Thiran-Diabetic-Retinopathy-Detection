@@ -16,7 +16,9 @@ const errorAlert = document.getElementById('errorAlert');
 let currentAnalysis = {
     prediction: null,
     imagePath: null,
-    report: null
+    confidence: null,
+    report: null,
+    reportId: null
 };
 
 // ============================================================================
@@ -68,6 +70,10 @@ function handleFileSelect(file) {
         showError('File size too large. Maximum 50 MB allowed.');
         return;
     }
+
+    // Clear stale state when a new image is selected
+    currentAnalysis.report = null;
+    currentAnalysis.reportId = null;
 
     // Create FormData and upload
     const formData = new FormData();
@@ -131,11 +137,13 @@ function uploadImage(formData) {
 }
 
 function displayResults(data) {
-    // Hide upload area after successful upload
-    uploadArea.style.display = 'none';
-    
-    // Display image
-    previewImage.src = 'data:image/png;base64,' + data.thumbnail;
+    // Display prediction results
+    if (data.thumbnail) {
+        previewImage.src = data.thumbnail;
+    }
+
+    // Store confidence for later use
+    currentAnalysis.confidence = data.confidence;
 
     // Severity information
     const severityLevels = ['No DR', 'Mild', 'Moderate', 'Severe', 'Proliferative'];
@@ -151,14 +159,14 @@ function displayResults(data) {
     document.getElementById('classification').textContent = severityText;
     document.getElementById('confidence').textContent = data.confidence;
 
-    // Add clinical guidance
-    const guidanceMap = {
-        0: 'Regular eye checkups recommended. No immediate intervention needed.',
-        1: 'Annual eye exams recommended. Monitor for progression.',
-        2: 'Urgent eye examination needed. Consider referral to ophthalmologist.',
-        3: 'Immediate eye examination required. Specialized treatment may be needed.',
-        4: 'URGENT: Immediate ophthalmology consultation required. Treatment recommended.'
-    };
+    // Show patient form and generate report button
+    const patientForm = document.getElementById('patientForm');
+    const generateBtn = document.getElementById('generateReportBtn');
+    if (patientForm) patientForm.style.display = 'block';
+    if (generateBtn) generateBtn.style.display = 'inline-block';
+
+    // Hide upload area
+    uploadArea.style.display = 'none';
 
     console.log('Analysis complete:', data);
 }
@@ -183,7 +191,11 @@ function generateReport() {
 
     // Show loading
     const reportStatus = document.getElementById('reportStatus');
+    const reportStatusText = document.getElementById('reportStatusText');
     reportStatus.classList.remove('hidden');
+    if (reportStatusText) {
+        reportStatusText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating report and preparing PDF...';
+    }
 
     fetch('/api/generate-report', {
         method: 'POST',
@@ -192,6 +204,7 @@ function generateReport() {
         },
         body: JSON.stringify({
             prediction: currentAnalysis.prediction,
+            confidence: currentAnalysis.confidence,
             patient_info: patientInfo,
             image_path: currentAnalysis.imagePath
         })
@@ -206,6 +219,7 @@ function generateReport() {
     })
     .then(data => {
         currentAnalysis.report = data.report;
+        currentAnalysis.reportId = data.report_id || null;
         reportStatus.classList.add('hidden');
 
         // Show verification modal
@@ -220,40 +234,102 @@ function generateReport() {
 function showReportModal(report) {
     const reportModalBody = document.getElementById('reportModalBody');
 
-    // Format report HTML
+    // Extract data from nested structure returned by backend
+    const patientName = report.patient?.name || 'Not provided';
+    const patientAge = report.patient?.age || 'Not provided';
+    const patientGender = report.patient?.gender || 'Not specified';
+    const drLevel = report.findings?.severity_level !== undefined ? report.findings.severity_level : 'N/A';
+    const classification = report.findings?.classification || 'Unknown';
+    const confidence = report.findings?.confidence || 'N/A';
+    const clinicalFindings = report.clinical_assessment || 'No assessment available';
+
+    // Handle recommendations - could be string or array
+    let recommendationsHTML = '';
+    if (Array.isArray(report.recommendations)) {
+        recommendationsHTML = report.recommendations.map(rec => `<li>${rec}</li>`).join('');
+    } else if (typeof report.recommendations === 'string') {
+        recommendationsHTML = `<li>${report.recommendations}</li>`;
+    } else if (Array.isArray(report.next_steps)) {
+        // Fallback to next_steps if recommendations not available
+        recommendationsHTML = report.next_steps.map(step => `<li>${step}</li>`).join('');
+    }
+
+    // Format report HTML with improved layout
     const reportHTML = `
-        <div style="font-size: 0.95rem; line-height: 1.8;">
-            <h6 style="color: var(--primary-color); font-weight: 700; margin-bottom: 15px;">
-                🏥 Team Thiran - Medical Report
-            </h6>
-
-            <div style="border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px;">
-                <p><strong>Report ID:</strong> ${report.report_id}</p>
-                <p><strong>Patient Name:</strong> ${report.patient_name}</p>
-                <p><strong>Phone:</strong> ${report.patient_phone || 'Not provided'}</p>
-                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <div style="font-size: 0.95rem; line-height: 1.8; color: var(--text-color);">
+            
+            <div style="text-align: center; background: linear-gradient(135deg, var(--primary-color), #2563eb); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h5 style="margin: 0; font-weight: 700;">🏥 Team Thiran Medical Report</h5>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Diabetic Retinopathy Detection System</p>
             </div>
 
-            <div style="background: var(--light-gray); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                <p><strong>DR Severity Level:</strong> <span class="badge" style="background: var(--primary-color); color: white; font-size: 1rem;">${report.dr_level}/4</span></p>
-                <p><strong>Classification:</strong> ${['No DR', 'Mild', 'Moderate', 'Severe', 'Proliferative'][report.dr_level]}</p>
+            <!-- Patient & Report Info Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                    <p style="margin: 0 0 8px 0; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">REPORT ID</p>
+                    <p style="margin: 0; font-weight: 700; color: var(--primary-color); word-break: break-all;">${report.report_id}</p>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--secondary-color);">
+                    <p style="margin: 0 0 8px 0; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">DATE & TIME</p>
+                    <p style="margin: 0; font-weight: 700;">${report.report_date}</p>
+                </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <p><strong>Clinical Findings:</strong></p>
-                <p style="color: var(--text-secondary);">${report.clinical_findings}</p>
+            <!-- Patient Information Section -->
+            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h6 style="margin: 0 0 12px 0; color: var(--primary-color); font-weight: 700; font-size: 1rem;">👤 Patient Information</h6>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">PATIENT NAME</p>
+                        <p style="margin: 0; font-weight: 600;">${patientName}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">AGE / GENDER</p>
+                        <p style="margin: 0; font-weight: 600;">${patientAge} years / ${patientGender}</p>
+                    </div>
+                </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <p><strong>Recommendations:</strong></p>
-                <ul style="color: var(--text-secondary); margin-left: 20px;">
-                    ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+            <!-- DR Severity Assessment Section -->
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+                <h6 style="margin: 0 0 12px 0; color: #856404; font-weight: 700; font-size: 1rem;">⚕️ Diabetic Retinopathy Assessment</h6>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 600; color: #856404; font-size: 0.85rem;">SEVERITY LEVEL</p>
+                        <p style="margin: 0; font-weight: 700; font-size: 1.1rem; color: #856404;">${drLevel}/4</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 600; color: #856404; font-size: 0.85rem;">CLASSIFICATION</p>
+                        <p style="margin: 0; font-weight: 700; font-size: 1.1rem;">${classification}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 600; color: #856404; font-size: 0.85rem;">CONFIDENCE</p>
+                        <p style="margin: 0; font-weight: 700; font-size: 1.1rem; color: var(--info-color);">${confidence}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinical Findings -->
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid var(--info-color); margin-bottom: 20px;">
+                <h6 style="margin: 0 0 10px 0; color: #0564b0; font-weight: 700; font-size: 1rem;">📋 Clinical Findings</h6>
+                <p style="margin: 0; color: #0564b0; line-height: 1.6;">${clinicalFindings}</p>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 20px;">
+                <h6 style="margin: 0 0 12px 0; color: #155724; font-weight: 700; font-size: 1rem;">✅ Medical Recommendations</h6>
+                <ul style="margin: 0; padding-left: 20px; color: #155724;">
+                    ${recommendationsHTML}
                 </ul>
             </div>
 
-            <div style="background: #ffeaa7; padding: 12px; border-radius: 8px; border-left: 4px solid var(--warning-color);">
-                <p style="margin: 0; color: #ff6b6b; font-weight: 600;">
-                    ⚠️ This is an automated analysis. Always consult a healthcare professional for diagnosis.
+            <!-- Disclaimer -->
+            <div style="background: #f8d7da; padding: 12px; border-radius: 8px; border-left: 4px solid #dc3545; margin-bottom: 0;">
+                <p style="margin: 0; color: #721c24; font-weight: 600; font-size: 0.9rem;">
+                    ⚠️ IMPORTANT DISCLAIMER
+                </p>
+                <p style="margin: 5px 0 0 0; color: #721c24; font-size: 0.85rem; line-height: 1.5;">
+                    This is an AI-assisted screening report and should NOT be used as a substitute for professional medical diagnosis. Always consult a qualified ophthalmologist or eye care specialist for final diagnosis and treatment decisions.
                 </p>
             </div>
         </div>
@@ -263,56 +339,19 @@ function showReportModal(report) {
     reportModal.classList.add('show');
 }
 
-function sendReport() {
-    const phone = document.getElementById('patientPhone').value;
-    const method = document.getElementById('notificationMethod').value;
-
-    if (!phone) {
-        showError('Phone number is required to send report');
+function downloadReport() {
+    if (!currentAnalysis.reportId) {
+        showError('Report is not ready for download. Please generate the report again.');
         return;
     }
 
-    if (!method) {
-        showError('Please select a notification method');
-        return;
-    }
+    window.location.href = `/api/download-report/${encodeURIComponent(currentAnalysis.reportId)}`;
+}
 
-    document.getElementById('sendReportBtn').disabled = true;
-    document.getElementById('sendReportBtn').textContent = 'Sending...';
-
-    fetch('/api/send-notification', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            phone: phone,
-            method: method,
-            report: currentAnalysis.report,
-            report_id: currentAnalysis.report.report_id
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(data => {
-                throw new Error(data.error || 'Sending failed');
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        closeModal();
-        showSuccess('✅ Report sent successfully!');
-        resetAnalysis();
-
-        document.getElementById('sendReportBtn').disabled = false;
-        document.getElementById('sendReportBtn').textContent = 'Send Report';
-    })
-    .catch(error => {
-        showError('Failed to send report: ' + error.message);
-        document.getElementById('sendReportBtn').disabled = false;
-        document.getElementById('sendReportBtn').textContent = 'Send Report';
-    });
+function finalizeAnalysis() {
+    closeModal();
+    showSuccess('✅ Analysis completed successfully. You can start a new case now.');
+    resetAnalysis();
 }
 
 // ============================================================================
@@ -330,19 +369,26 @@ function resetAnalysis() {
     progressContainer.classList.add('hidden');
     uploadArea.style.display = 'flex';
     errorAlert.classList.add('hidden');
+    
+    const patientForm = document.getElementById('patientForm');
+    const generateBtn = document.getElementById('generateReportBtn');
+    if (patientForm) patientForm.style.display = 'none';
+    if (generateBtn) generateBtn.style.display = 'none';
+    
     document.getElementById('patientName').value = '';
     document.getElementById('patientEmail').value = '';
     document.getElementById('patientPhone').value = '';
     document.getElementById('patientAge').value = '';
     document.getElementById('patientGender').value = '';
-    document.getElementById('notificationMethod').value = '';
     previewImage.src = '';
 
     // Reset analysis data
     currentAnalysis = {
         prediction: null,
         imagePath: null,
-        report: null
+        confidence: null,
+        report: null,
+        reportId: null
     };
     
     // Scroll back to upload area
@@ -358,11 +404,26 @@ function showError(message) {
 function showSuccess(message) {
     const alert = document.createElement('div');
     alert.className = 'alert alert-success alert-dismissible fade show';
+    alert.style = 'margin-top: 20px; border-left: 4px solid #28a745;';
     alert.innerHTML = `
-        ${message}
+        <i class="fas fa-check-circle"></i> ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    document.querySelector('.container').insertBefore(alert, document.querySelector('.card'));
+    
+    // Try to find container-fluid first, then fall back to container
+    const container = document.querySelector('.container-fluid') || document.querySelector('.container');
+
+    if (container) {
+        container.prepend(alert);
+    } else if (document.body) {
+        // Fallback: insert at the top of the body if no container found
+        document.body.prepend(alert);
+    }
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
 }
 
 // Close modal when clicking outside

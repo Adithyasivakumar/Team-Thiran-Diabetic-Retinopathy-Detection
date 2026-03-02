@@ -5,10 +5,11 @@ This is a separate interface to the backend. The original Tkinter GUI (blindness
 
 import os
 import sys
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import timedelta
+from urllib.parse import unquote
 import mysql.connector
 from dotenv import load_dotenv
 from PIL import Image
@@ -19,10 +20,8 @@ import base64
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from backend.model import model, inference, test_transforms, classes, main
-from reports.report_generator import create_report
+from reports.report_generator import create_report, MedicalReportGenerator
 from reports.pdf_report import create_pdf_report
-from messaging.send_sms import send_report_sms
-from messaging.send_whatsapp import send_report_whatsapp
 
 # Load environment variables
 load_dotenv()
@@ -214,7 +213,13 @@ def api_predict():
         image.save(filepath)
 
         # Run inference using backend model
-        prediction, prediction_class = inference(model, filepath, test_transforms, classes)
+        prediction, prediction_class, confidence_score = inference(
+            model,
+            filepath,
+            test_transforms,
+            classes,
+            return_confidence=True
+        )
 
         # Create base64 thumbnail for display
         thumb = image.copy()
@@ -228,7 +233,7 @@ def api_predict():
             'success': True,
             'prediction': int(prediction),
             'severity': prediction_class,
-            'confidence': f'{(max(0.9, 0.95 + (prediction * 0.01))):.2%}',
+            'confidence': f'{confidence_score:.2%}',
             'image_path': filepath,
             'thumbnail': f'data:image/png;base64,{thumb_b64}'
         })
@@ -244,18 +249,21 @@ def api_generate_report():
         data = request.get_json()
 
         prediction = data.get('prediction')
+        confidence = data.get('confidence', '95.00%')
         patient_info = data.get('patient_info', {})
         image_path = data.get('image_path')
 
         if prediction is None:
             return jsonify({'error': 'Prediction required'}), 400
 
+        # Extract confidence value (remove % if present)
+        confidence_value = float(confidence.replace('%', '')) if isinstance(confidence, str) else confidence
+
         # Create report using correct function signature
-        # create_report(username, severity_level, confidence_score, image_path, age, gender)
         report = create_report(
             username=patient_info.get('name', 'Anonymous'),
             severity_level=prediction,
-            confidence_score=0.97,
+            confidence_score=confidence_value,
             image_path=image_path,
             age=patient_info.get('age', 'Not provided'),
             gender=patient_info.get('gender', 'Not specified')
@@ -267,7 +275,8 @@ def api_generate_report():
         return jsonify({
             'success': True,
             'report': report,
-            'pdf_path': pdf_path
+            'pdf_path': pdf_path,
+            'report_id': report.get('report_id')
         })
 
     except Exception as e:
@@ -275,46 +284,38 @@ def api_generate_report():
         traceback.print_exc()
         return jsonify({'error': f'Report generation failed: {str(e)}'}), 500
 
+@app.route('/api/download-report/<report_id>', methods=['GET'])
+@login_required
+def api_download_report(report_id):
+    """Download generated PDF report by report ID"""
+    try:
+        safe_report_id = unquote(report_id).strip()
+        if not safe_report_id or '..' in safe_report_id or '/' in safe_report_id or '\\' in safe_report_id:
+            return jsonify({'error': 'Invalid report ID'}), 400
+
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        reports_dir = os.path.join(project_root, 'reports', 'generated_reports')
+        pdf_file = os.path.join(reports_dir, f"{safe_report_id}.pdf")
+
+        if not os.path.exists(pdf_file):
+            return jsonify({'error': 'Report file not found'}), 404
+
+        return send_file(
+            pdf_file,
+            as_attachment=True,
+            download_name=f"{safe_report_id}.pdf",
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        return jsonify({'error': f'Unable to download report: {str(e)}'}), 500
+
 @app.route('/api/send-notification', methods=['POST'])
 @login_required
 def api_send_notification():
-    """API endpoint to send SMS/WhatsApp notification"""
-    try:
-        data = request.get_json()
-
-        phone = data.get('phone', '').strip()
-        report_id = data.get('report_id', '')
-        method = data.get('method', 'sms')  # 'sms', 'whatsapp', or 'both'
-        report_data = data.get('report', {})
-
-        if not phone:
-            return jsonify({'error': 'Phone number required'}), 400
-
-        results = {}
-
-        # Send SMS
-        if method in ['sms', 'both']:
-            try:
-                sms_result = send_report_sms(phone, report_data)
-                results['sms'] = sms_result
-            except Exception as e:
-                results['sms_error'] = str(e)
-
-        # Send WhatsApp
-        if method in ['whatsapp', 'both']:
-            try:
-                wp_result = send_report_whatsapp(phone, report_data)
-                results['whatsapp'] = wp_result
-            except Exception as e:
-                results['whatsapp_error'] = str(e)
-
-        return jsonify({
-            'success': True,
-            'results': results
-        })
-
-    except Exception as e:
-        return jsonify({'error': f'Notification failed: {str(e)}'}), 500
+    """Notifications are intentionally disabled for demo mode"""
+    return jsonify({
+        'error': 'Notification module is disabled for the current demo build. Please download the report PDF instead.'
+    }), 503
 
 # ============================================================================
 # ERROR HANDLERS

@@ -3,133 +3,138 @@
 {% block title %}Analyze - Team Thiran DR Detection{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5 mb-5" style="max-width: 1200px;">
     <div class="row">
-        <div class="col-lg-8 offset-lg-2">
+        <div class="col-lg-10 offset-lg-1">
+            
             <!-- Upload Card -->
-            <div class="card mb-4">
-                <div class="card-header">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; font-weight: 600; padding: 16px 20px;">
                     <i class="fas fa-upload"></i> Upload Retinal Image for Analysis
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 30px;">
                     <!-- Upload Area -->
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Drag and drop your image here</div>
-                        <div class="upload-subtext">or click to browse from your computer</div>
-                        <button type="button" class="btn btn-primary btn-sm mt-3" onclick="document.getElementById('fileInput').click()">
-                            Choose File
+                    <div class="upload-area" id="uploadArea" style="padding: 40px 20px;">
+                        <div class="upload-icon" style="font-size: 3rem;">📷</div>
+                        <div class="upload-text" style="font-size: 1.2rem; margin-top: 15px; font-weight: 600;">Drag and drop your image here</div>
+                        <div class="upload-subtext" style="margin-top: 8px; font-size: 0.95rem;">or click to browse from your computer</div>
+                        <button type="button" class="btn btn-primary btn-sm mt-4" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Choose File
                         </button>
                         <input type="file" id="fileInput" accept="image/*" hidden>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);">Supported formats: JPG, PNG, BMP, TIFF (Max 50MB)</p>
                     </div>
 
                     <!-- Progress -->
                     <div id="progressContainer" class="hidden mt-4">
-                        <div class="loading-text">Processing your image...</div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%"></div>
+                        <div class="loading-text" style="text-align: center; margin-bottom: 15px; font-weight: 600;">Processing your image...</div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #1e3c72, #2a5298);"></div>
                         </div>
-                        <div class="spinner"></div>
+                        <div class="spinner" style="margin-top: 20px;"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Results Card (Hidden until analysis) -->
-            <div id="resultsCard" class="card hidden">
-                <div class="card-header">
+            <div id="resultsCard" class="card hidden shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; font-weight: 600; padding: 16px 20px;">
                     <i class="fas fa-microscope"></i> Analysis Results
                 </div>
-                <div class="card-body">
-                    <!-- Image Preview -->
-                    <img id="previewImage" class="image-preview" alt="Uploaded image">
-
-                    <!-- Severity Badge -->
-                    <div class="mt-4">
-                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">Detection Result:</div>
-                        <div id="severityBadge" class="severity-badge"></div>
-                    </div>
-
-                    <!-- Result Info -->
-                    <div class="result-info">
-                        <div class="info-item">
-                            <div class="info-label">Severity Level</div>
-                            <div class="info-value" id="severityLevel">-</div>
+                <div class="card-body" style="padding: 30px;">
+                    
+                    <!-- Image and Results Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                        <!-- Uploaded Image Section -->
+                        <div>
+                            <div style="font-size: 1rem; color: #1e3c72; margin-bottom: 12px; font-weight: 700;">📷 Uploaded Image</div>
+                            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                                <img id="previewImage" class="image-preview" alt="Uploaded image" style="width: 100%; height: auto; border-radius: 6px; display: block;">
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Classification</div>
-                            <div class="info-value" id="classification">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Confidence</div>
-                            <div class="info-value" id="confidence">-</div>
+                        
+                        <!-- Results Info Section -->
+                        <div>
+                            <div style="font-size: 1rem; color: #1e3c72; margin-bottom: 12px; font-weight: 700;">📊 Analysis Results</div>
+                            <div id="severityBadge" class="severity-badge" style="display: block; margin-bottom: 15px; padding: 12px; text-align: center; border-radius: 8px; font-size: 1.1rem; font-weight: 700;"></div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div class="info-item" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 6px;">
+                                    <div class="info-label" style="font-size: 0.85rem; color: #856404; font-weight: 600;">Severity Level</div>
+                                    <div class="info-value" id="severityLevel" style="font-size: 1.3rem; color: #856404; font-weight: 700;">-</div>
+                                </div>
+                                <div class="info-item" style="background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 12px; border-radius: 6px;">
+                                    <div class="info-label" style="font-size: 0.85rem; color: #0c5460; font-weight: 600;">Classification</div>
+                                    <div class="info-value" id="classification" style="font-size: 1.3rem; color: #0c5460; font-weight: 700;">-</div>
+                                </div>
+                                <div class="info-item" style="background: #d4edda; border-left: 4px solid #28a745; padding: 12px; border-radius: 6px;">
+                                    <div class="info-label" style="font-size: 0.85rem; color: #155724; font-weight: 600;">Confidence Score</div>
+                                    <div class="info-value" id="confidence" style="font-size: 1.3rem; color: #155724; font-weight: 700;">-</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Patient Information -->
-                    <div class="patient-form mt-4">
-                        <h5 class="mb-3">Patient Information (Optional)</h5>
+                    <div class="patient-form mt-4" id="patientForm" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #1e3c72;">
+                        <h5 class="mb-3" style="color: #1e3c72; font-weight: 700;">📋 Patient Information</h5>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Patient Name</label>
-                                <input type="text" class="form-control" id="patientName" placeholder="Name">
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Patient Name</label>
+                                <input type="text" class="form-control" id="patientName" placeholder="Full name" style="border-color: #ddd;">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="patientEmail" placeholder="Email">
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Age</label>
+                                <input type="number" class="form-control" id="patientAge" placeholder="Age" min="0" max="120" style="border-color: #ddd;">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="patientPhone" placeholder="Phone (with country code)">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Age</label>
-                                <input type="number" class="form-control" id="patientAge" placeholder="Age" min="0" max="150">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Gender</label>
-                                <select class="form-select" id="patientGender">
-                                    <option value="">-- Select Gender --</option>
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Gender</label>
+                                <select class="form-select" id="patientGender" style="border-color: #ddd;">
+                                    <option value="Not specified">-- Select --</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Preferred Notification</label>
-                                <select class="form-select" id="notificationMethod">
-                                    <option value="">-- Choose Option --</option>
-                                    <option value="sms">📱 SMS Only</option>
-                                    <option value="whatsapp">💬 WhatsApp Only</option>
-                                    <option value="both">📱💬 Both SMS & WhatsApp</option>
-                                </select>
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Email</label>
+                                <input type="email" class="form-control" id="patientEmail" placeholder="Email" style="border-color: #ddd;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Phone Number</label>
+                                <input type="tel" class="form-control" id="patientPhone" placeholder="Optional (for future integrations)" style="border-color: #ddd;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-weight: 600; color: #1e3c72; font-size: 0.95rem;">Report Delivery</label>
+                                <input type="text" class="form-control" value="PDF Download (Demo Mode)" readonly style="border-color: #ddd; background-color: #f3f4f6;">
                             </div>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px;">
-                        <button class="btn btn-secondary" onclick="resetAnalysis()">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px;">
+                        <button class="btn btn-secondary" onclick="resetAnalysis()" style="padding: 12px 20px; font-weight: 600; border-radius: 6px;">
                             <i class="fas fa-sync-alt"></i> New Analysis
                         </button>
-                        <button class="btn btn-success" id="generateReportBtn" onclick="generateReport()">
+                        <button class="btn btn-success" id="generateReportBtn" style="display: none; padding: 12px 20px; font-weight: 600; background: linear-gradient(135deg, #28a745, #20c997); border: none; border-radius: 6px;" onclick="generateReport()">
                             <i class="fas fa-file-pdf"></i> Generate Report
                         </button>
                     </div>
 
                     <!-- Report Status -->
-                    <div id="reportStatus" class="alert hidden mt-3">
-                        <div class="loading-text" id="reportStatusText">Generating medical report...</div>
+                    <div id="reportStatus" class="alert hidden mt-3" style="background: #cfe2ff; border: 1px solid #b6d4fe; color: #084298; border-radius: 6px;">
+                        <div class="loading-text" id="reportStatusText"><i class="fas fa-spinner fa-spin"></i> Generating medical report...</div>
                     </div>
                 </div>
             </div>
 
             <!-- Error Alert (Hidden until needed) -->
-            <div id="errorAlert" class="alert alert-danger hidden mt-4">
-                <span id="errorText"></span>
+            <div id="errorAlert" class="alert alert-danger hidden mt-4" style="border-left: 4px solid #dc3545; border-radius: 6px;">
+                <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
             </div>
         </div>
     </div>
@@ -138,21 +143,24 @@
 <!-- Report Verification Modal -->
 <div id="reportModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">📋 Medical Report Preview</h5>
-            <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
+        <div class="modal-header" style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 8px 8px 0 0;">
+            <h5 class="modal-title" style="margin: 0;">📋 Medical Report Preview</h5>
+            <button type="button" class="close-btn" onclick="closeModal()" style="color: white; opacity: 0.8;">&times;</button>
         </div>
-        <div class="modal-body" id="reportModalBody">
+        <div class="modal-body" id="reportModalBody" style="max-height: 70vh; overflow-y: auto;">
             <!-- Report content will be inserted here -->
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-primary" id="sendReportBtn" onclick="sendReport()">
-                Send Report
+        <div class="modal-footer" style="border-top: 1px solid #e0e0e0; padding: 15px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()" style="border-radius: 6px;">Cancel</button>
+            <button type="button" class="btn btn-success" id="downloadReportBtn" onclick="downloadReport()" style="border: none; border-radius: 6px;">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+            <button type="button" class="btn btn-primary" id="finishReportBtn" onclick="finalizeAnalysis()" style="background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; border-radius: 6px;">
+                <i class="fas fa-check"></i> Complete Analysis
             </button>
         </div>
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}?v=20260225"></script>
 {% endblock %}

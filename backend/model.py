@@ -51,7 +51,7 @@ def load_model(path):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
     return model
-def inference(model, file, transform, classes):
+def inference(model, file, transform, classes, return_confidence=False):
     file = Image.open(file).convert('RGB')
     img = transform(file).unsqueeze(0)
     print('Transforming your image...')
@@ -63,9 +63,12 @@ def inference(model, file, transform, classes):
         ps = torch.exp(out)
         top_p, top_class = ps.topk(1, dim=1)
         value = top_class.item()
+        confidence = top_p.item()
         print("Predicted Severity Value: ", value)
         print("class is: ", classes[value])
         print('Your image is printed:')
+        if return_confidence:
+            return value, classes[value], confidence
         return value, classes[value]
         # plt.imshow(np.array(file))
         # plt.show()
