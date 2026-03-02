@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}Team Thiran - DR Detection{% endblock %}</title>
+  <meta name="description" content="AI-Powered Diabetic Retinopathy Detection System">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+
+  <!-- Google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rubik:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Doclab CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doclab_css/style.css') }}">
+
+  <!-- Custom CSS for Team Thiran -->
+  <style>
+    :root {
+      --rich-black-fogra-29: hsl(222, 44%, 8%);
+      --middle-blue-green_40: hsla(174, 64%, 71%, 0.4);
+      --midnight-green: hsl(186, 100%, 19%);
+      --midnight-green_a25: hsla(186, 100%, 19%, 0.25);
+      --independece: hsl(236, 14%, 39%);
+      --verdigris: hsl(182, 100%, 35%);
+      --ming: hsl(186, 72%, 24%);
+      --space-cadet: hsla(226, 45%, 24%);
+      --gunmetal: hsl(222, 12%, 25%);
+      --light-gray: hsl(0, 0%, 95%);
+      --white: hsl(0, 0%, 100%);
+    }
+    
+    .team-thiran-logo {
+      font-weight: 700;
+      color: var(--verdigris);
+      letter-spacing: 1px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body id="top">
+
+  <!-- Preloader -->
+  <div class="preloader" data-preloader>
+    <div class="circle"></div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="header" data-header>
+    <div class="container">
+
+      <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo team-thiran-logo">
+        Team Thiran DR
+      </a>
+
+      <nav class="navbar" data-navbar>
+        <div class="navbar-top">
+          <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo team-thiran-logo">
+            Team Thiran DR
+          </a>
+          <button class="nav-close-btn" aria-label="close menu" data-nav-toggler>
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
+        <ul class="navbar-list">
+          {% if session.get('username') %}
+          <li class="navbar-item">
+            <a href="{{ url_for('dashboard') }}" class="navbar-link title-md">Dashboard</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('upload') }}" class="navbar-link title-md">Analyze</a>
+          </li>
+          <li class="navbar-item">
+            <a href="{{ url_for('logout') }}" class="navbar-link title-md">Logout</a>
+          </li>
+          {% else %}
+          <li class="navbar-item">
+            <a href="{{ url_for('login') }}" class="navbar-link title-md">Login</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+
+      <button class="nav-open-btn" aria-label="open menu" data-nav-toggler>
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+
+      {% if session.get('username') %}
+      <a href="{{ url_for('upload') }}" class="btn has-before title-md">Start Analysis</a>
+      {% endif %}
+
+      <div class="overlay" data-nav-toggler data-overlay></div>
+    </div>
+  </header>
+
+  <main>
+    <article>
+      {% block content %}{% endblock %}
+    </article>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <p class="footer-list-title title-md">Team Thiran</p>
+          <p class="footer-text">
+            Advanced Diabetic Retinopathy Detection using Artificial Intelligence
+          </p>
+        </div>
+
+        <div class="footer-list">
+          <p class="footer-list-title title-md">Quick Links</p>
+          <ul>
+            <li><a href="#" class="footer-link">About Us</a></li>
+            <li><a href="#" class="footer-link">Services</a></li>
+            <li><a href="#" class="footer-link">Technology</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-list">
+          <p class="footer-list-title title-md">Contact Info</p>
+          <ul>
+            <li><a href="tel:+1(555)123-4567" class="footer-link">+1 (555) 123-4567</a></li>
+            <li><a href="mailto:info@teamthiran.com" class="footer-link">info@teamthiran.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="text copyright">
+          &copy; Team Thiran 2026 | AI-Powered DR Detection System
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top button -->
+  <a href="#top" class="back-top-btn" aria-label="back to top" data-back-top-btn>
+    <ion-icon name="chevron-up"></ion-icon>
+  </a>
+
+  <!-- Doclab JS -->
+  <script src="{{ url_for('static', filename='doclab_js/script.js') }}"></script>
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

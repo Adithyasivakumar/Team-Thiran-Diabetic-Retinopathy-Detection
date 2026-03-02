@@ -77,12 +77,12 @@ def login():
         password = request.form.get('password', '').strip()
 
         if not username or not password:
-            return render_template('login.html', error='Username and password required')
+            return render_template('login_doclab.html', message='Username and password required')
 
         try:
             conn = get_db_connection()
             if not conn:
-                return render_template('login.html', error='Database connection failed')
+                return render_template('login_doclab.html', message='Database connection failed')
 
             cursor = conn.cursor()
             query = "SELECT 1 FROM THEGREAT WHERE USERNAME = %s AND PASSWORD = %s"
@@ -97,12 +97,12 @@ def login():
             else:
                 cursor.close()
                 conn.close()
-                return render_template('login.html', error='Invalid username or password')
+                return render_template('login_doclab.html', message='Invalid username or password')
 
         except Exception as e:
-            return render_template('login.html', error=f'Login error: {str(e)}')
+            return render_template('login_doclab.html', message=f'Login error: {str(e)}')
 
-    return render_template('login.html')
+    return render_template('login_doclab.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -175,13 +175,13 @@ def index():
 @login_required
 def dashboard():
     """Main dashboard"""
-    return render_template('dashboard.html', username=session.get('user_id'))
+    return render_template('dashboard_doclab.html', username=session.get('user_id'))
 
 @app.route('/upload')
 @login_required
 def upload():
     """Image upload page"""
-    return render_template('upload.html')
+    return render_template('upload_doclab.html')
 
 @app.route('/api/predict', methods=['POST'])
 @login_required
