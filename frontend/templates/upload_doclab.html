@@ -263,7 +263,7 @@
     formData.append('file', file);
 
     // Upload and predict
-    fetch('{{ url_for('predict') }}', {
+    fetch('{{ url_for('api_predict') }}', {
       method: 'POST',
       body: formData
     })
@@ -347,7 +347,7 @@
       document.getElementById('progressBar').style.width = progress + '%';
     }, 200);
 
-    fetch('{{ url_for('generate_report') }}', {
+    fetch('{{ url_for('api_generate_report') }}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
