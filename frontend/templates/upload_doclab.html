@@ -1,6 +1,6 @@
 {% extends "base_doclab.html" %}
 
-{% block title %}Analyze - Team Thiran DR Detection{% endblock %}
+{% block title %}Analyze - Retinex AI{% endblock %}
 
 {% block content %}
 
@@ -8,8 +8,8 @@
 <section class="section hero" style="background-image: url('{{ url_for('static', filename='doclab_images/hero-bg.png') }}'); min-height: 40vh; display: flex; align-items: center;">
   <div class="container">
     <div class="hero-content">
-      <h1 class="headline-lg hero-title" style="color: #000; font-size: 2.5rem;">Analyze Retinal Image</h1>
-      <p style="font-size: 1.1rem; color: #666; margin-top: 15px;">Upload a fundus image for AI-powered diabetic retinopathy detection</p>
+      <h1 class="headline-lg hero-title" style="font-size: 2.5rem;">Analyze Retinal Image</h1>
+      <p style="font-size: 1.1rem; color: var(--independece); margin-top: 15px;">Upload a fundus image for AI-powered diabetic retinopathy detection</p>
     </div>
   </div>
 </section>
@@ -22,7 +22,7 @@
       <!-- Upload Area -->
       <div style="background: white; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 30px;">
         
-        <div style="background: linear-gradient(135deg, #1a6b7e, #24a89e); color: white; padding: 20px; font-weight: 600;">
+        <div style="background: linear-gradient(135deg, var(--verdigris), var(--ming)); color: var(--white); padding: 20px; font-weight: 600;">
           <ion-icon name="cloud-upload-outline" style="margin-right: 10px; font-size: 1.2rem;"></ion-icon>
           Upload Retinal Image
         </div>
@@ -31,20 +31,20 @@
           <!-- Upload Drop Zone -->
           <div id="uploadArea" class="upload-zone" 
                style="
-                 border: 3px dashed #1a6b7e; 
+                 border: 3px dashed var(--verdigris); 
                  border-radius: 12px; 
                  padding: 50px 20px; 
                  text-align: center; 
                  cursor: pointer; 
                  transition: all 0.3s;
-                 background: #f8f9fa;
+                 background: var(--alice-blue);
                "
-               onmouseover="this.style.background='#f0f7f9'; this.style.borderColor='#24a89e'"
-               onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#1a6b7e'">
+               onmouseover="this.style.background='var(--white)'; this.style.borderColor='var(--ming)'"
+               onmouseout="this.style.background='var(--alice-blue)'; this.style.borderColor='var(--verdigris)'">
             
             <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
-            <div style="font-size: 1.2rem; font-weight: 600; color: #1a1a1a; margin-bottom: 8px;">Drag and drop your image</div>
-            <div style="color: #666; margin-bottom: 20px;">or click to browse from your computer</div>
+            <div style="font-size: 1.2rem; font-weight: 600; color: var(--eerie-black); margin-bottom: 8px;">Drag and drop your image</div>
+            <div style="color: var(--independece); margin-bottom: 20px;">or click to browse from your computer</div>
             
             <button type="button" class="btn has-before" 
                     onclick="document.getElementById('fileInput').click()"
@@ -54,17 +54,17 @@
             </button>
             
             <input type="file" id="fileInput" accept="image/*" hidden>
-            <p style="font-size: 0.85rem; color: #999;">Supported: JPG, PNG, BMP, TIFF (Max 50MB)</p>
+            <p style="font-size: 0.85rem; color: var(--gray-web);">Supported: JPG, PNG, BMP, TIFF (Max 50MB)</p>
           </div>
 
           <!-- Progress Bar (Hidden) -->
           <div id="progressContainer" style="display: none; margin-top: 30px;">
-            <div style="text-align: center; margin-bottom: 20px; font-weight: 600; color: #1a6b7e;">Processing your image...</div>
-            <div style="height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden;">
-              <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #1a6b7e, #24a89e); transition: width 0.3s;"></div>
+            <div style="text-align: center; margin-bottom: 20px; font-weight: 600; color: var(--verdigris);">Processing your image...</div>
+            <div style="height: 8px; background: var(--gainsboro); border-radius: 10px; overflow: hidden;">
+              <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--verdigris), var(--ming)); transition: width 0.3s;"></div>
             </div>
             <div style="display: flex; justify-content: center; margin-top: 20px;">
-              <div style="width: 40px; height: 40px; border: 4px solid #1a6b7e; border-top-color: #24a89e; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+              <div style="width: 40px; height: 40px; border: 4px solid var(--verdigris); border-top-color: var(--ming); border-radius: 50%; animation: spin 1s linear infinite;"></div>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
       <!-- Results Card (Hidden until analysis) -->
       <div id="resultsCard" style="display: none; background: white; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden;">
         
-        <div style="background: linear-gradient(135deg, #1a6b7e, #24a89e); color: white; padding: 20px; font-weight: 600;">
+        <div style="background: linear-gradient(135deg, var(--verdigris), var(--ming)); color: var(--white); padding: 20px; font-weight: 600;">
           <ion-icon name="analytics-outline" style="margin-right: 10px; font-size: 1.2rem;"></ion-icon>
           Analysis Results
         </div>
@@ -85,39 +85,39 @@
             
             <!-- Image Section -->
             <div>
-              <h3 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">
+              <h3 style="color: var(--eerie-black); font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">
                 <ion-icon name="image-outline" style="margin-right: 8px;"></ion-icon>Uploaded Image
               </h3>
-              <div style="background: #f8f9fa; padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0;">
+              <div style="background: var(--alice-blue); padding: 12px; border-radius: 10px; border: 2px solid var(--gainsboro);">
                 <img id="previewImage" style="width: 100%; height: auto; border-radius: 8px; display: block;">
               </div>
             </div>
 
             <!-- Results Section -->
             <div>
-              <h3 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">
+              <h3 style="color: var(--eerie-black); font-weight: 600; margin-bottom: 15px; font-size: 1.1rem;">
                 <ion-icon name="checkmark-circle-outline" style="margin-right: 8px;"></ion-icon>Diagnosis Results
               </h3>
 
               <!-- Severity Badge -->
-              <div id="severityBadge" style="padding: 16px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: 600; font-size: 1.1rem; color: white; background: #1a6b7e;"></div>
+              <div id="severityBadge" style="padding: 16px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: 600; font-size: 1.1rem; color: var(--white); background: var(--verdigris);"></div>
 
               <!-- Result Items -->
               <div style="display: flex; flex-direction: column; gap: 15px;">
                 
-                <div style="background: #fffbf0; border-left: 4px solid #ff9800; padding: 15px; border-radius: 8px;">
-                  <div style="font-size: 0.85rem; color: #cc7a00; font-weight: 600;">Severity Level</div>
-                  <div id="severityLevel" style="font-size: 1.3rem; color: #cc7a00; font-weight: 700; margin-top: 5px;">-</div>
+                <div style="background: var(--alice-blue); border-left: 4px solid var(--ming); padding: 15px; border-radius: 8px;">
+                  <div style="font-size: 0.85rem; color: var(--ming); font-weight: 600;">Severity Level</div>
+                  <div id="severityLevel" style="font-size: 1.3rem; color: var(--ming); font-weight: 700; margin-top: 5px;">-</div>
                 </div>
 
-                <div style="background: #f0f8ff; border-left: 4px solid #1a6b7e; padding: 15px; border-radius: 8px;">
-                  <div style="font-size: 0.85rem; color: #003d5c; font-weight: 600;">Classification</div>
-                  <div id="classification" style="font-size: 1.3rem; color: #003d5c; font-weight: 700; margin-top: 5px;">-</div>
+                <div style="background: var(--alice-blue); border-left: 4px solid var(--verdigris); padding: 15px; border-radius: 8px;">
+                  <div style="font-size: 0.85rem; color: var(--space-cadet); font-weight: 600;">Classification</div>
+                  <div id="classification" style="font-size: 1.3rem; color: var(--space-cadet); font-weight: 700; margin-top: 5px;">-</div>
                 </div>
 
-                <div style="background: #f0fff4; border-left: 4px solid #00a86b; padding: 15px; border-radius: 8px;">
-                  <div style="font-size: 0.85rem; color: #006b47; font-weight: 600;">Confidence Score</div>
-                  <div id="confidence" style="font-size: 1.3rem; color: #006b47; font-weight: 700; margin-top: 5px;">-</div>
+                <div style="background: var(--alice-blue); border-left: 4px solid var(--verdigris); padding: 15px; border-radius: 8px;">
+                  <div style="font-size: 0.85rem; color: var(--verdigris); font-weight: 600;">Confidence Score</div>
+                  <div id="confidence" style="font-size: 1.3rem; color: var(--verdigris); font-weight: 700; margin-top: 5px;">-</div>
                 </div>
 
               </div>
@@ -126,32 +126,32 @@
           </div>
 
           <!-- Divider -->
-          <div style="height: 1px; background: #e0e0e0; margin: 30px 0;"></div>
+          <div style="height: 1px; background: var(--gainsboro); margin: 30px 0;"></div>
 
           <!-- Patient Information Form -->
           <div id="patientForm" style="display: none;">
-            <h3 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; font-size: 1.1rem;">
+            <h3 style="color: var(--eerie-black); font-weight: 600; margin-bottom: 20px; font-size: 1.1rem;">
               <ion-icon name="person-outline" style="margin-right: 8px;"></ion-icon>Patient Information
             </h3>
 
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
               
               <div>
-                <label style="display: block; margin-bottom: 8px; color: #1a1a1a; font-weight: 600; font-size: 0.9rem;">Name *</label>
+                  <label style="display: block; margin-bottom: 8px; color: var(--eerie-black); font-weight: 600; font-size: 0.9rem;">Name *</label>
                 <input type="text" id="patientName" placeholder="Patient name" 
-                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
+                    style="width: 100%; padding: 12px; border: 2px solid var(--gainsboro); border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
               </div>
 
               <div>
-                <label style="display: block; margin-bottom: 8px; color: #1a1a1a; font-weight: 600; font-size: 0.9rem;">Age *</label>
+                  <label style="display: block; margin-bottom: 8px; color: var(--eerie-black); font-weight: 600; font-size: 0.9rem;">Age *</label>
                 <input type="number" id="patientAge" placeholder="Age" 
-                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
+                    style="width: 100%; padding: 12px; border: 2px solid var(--gainsboro); border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
               </div>
 
               <div>
-                <label style="display: block; margin-bottom: 8px; color: #1a1a1a; font-weight: 600; font-size: 0.9rem;">Gender *</label>
+                <label style="display: block; margin-bottom: 8px; color: var(--eerie-black); font-weight: 600; font-size: 0.9rem;">Gender *</label>
                 <select id="patientGender" 
-                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
+                  style="width: 100%; padding: 12px; border: 2px solid var(--gainsboro); border-radius: 8px; font-size: 0.95rem; font-family: 'Rubik', sans-serif;">
                   <option value="">Select gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -163,12 +163,12 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
               <button type="button" onclick="generateReport()" class="btn has-before" 
-                      style="padding: 14px; background: linear-gradient(135deg, #1a6b7e, #24a89e); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+                      style="padding: 14px; background: linear-gradient(135deg, var(--verdigris), var(--ming)); color: var(--white); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                 <ion-icon name="document-text-outline" style="margin-right: 8px;"></ion-icon>
                 Generate Report
               </button>
               <button type="button" onclick="uploadAnother()" class="btn has-before" 
-                      style="padding: 14px; background: #f0f0f0; color: #333; border: 2px solid #e0e0e0; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+                      style="padding: 14px; background: var(--alice-blue); color: var(--eerie-black); border: 2px solid var(--gainsboro); border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">
                 <ion-icon name="reload-outline" style="margin-right: 8px;"></ion-icon>
                 Analyze Another
               </button>
@@ -176,12 +176,12 @@
           </div>
 
           <!-- Download Report (Hidden) -->
-          <div id="downloadSection" style="display: none; text-align: center; padding: 30px; background: linear-gradient(135deg, #f0fff4, #e8f5f0); border-radius: 10px;">
-            <ion-icon name="checkmark-circle" style="font-size: 3rem; color: #00a86b; margin-bottom: 15px; display: block;"></ion-icon>
-            <h4 style="color: #1a1a1a; font-weight: 600; margin-bottom: 10px;">Report Generated Successfully!</h4>
-            <p style="color: #666; margin-bottom: 20px;">Your medical report is ready for download</p>
+          <div id="downloadSection" style="display: none; text-align: center; padding: 30px; background: var(--alice-blue); border-radius: 10px;">
+            <ion-icon name="checkmark-circle" style="font-size: 3rem; color: var(--verdigris); margin-bottom: 15px; display: block;"></ion-icon>
+                <h4 style="color: var(--eerie-black); font-weight: 600; margin-bottom: 10px;">Report Generated Successfully!</h4>
+                <p style="color: var(--independece); margin-bottom: 20px;">Your medical report is ready for download</p>
             <button type="button" id="downloadBtn" class="btn has-before" 
-                    style="padding: 12px 30px; background: linear-gradient(135deg, #1a6b7e, #24a89e); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                  style="padding: 12px 30px; background: linear-gradient(135deg, var(--verdigris), var(--ming)); color: var(--white); border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
               <ion-icon name="download-outline" style="margin-right: 8px;"></ion-icon>
               Download PDF Report
             </button>
@@ -201,8 +201,8 @@
 
   input:focus, select:focus {
     outline: none;
-    border-color: #1a6b7e !important;
-    box-shadow: 0 0 0 3px rgba(26, 107, 126, 0.1);
+    border-color: var(--verdigris) !important;
+    box-shadow: 0 0 0 3px var(--middle-blue-green_40);
   }
 
   .btn {
@@ -227,19 +227,19 @@
   const uploadArea = document.getElementById('uploadArea');
   uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    uploadArea.style.background = '#f0f7f9';
-    uploadArea.style.borderColor = '#24a89e';
+    uploadArea.style.background = 'var(--white)';
+    uploadArea.style.borderColor = 'var(--ming)';
   });
 
   uploadArea.addEventListener('dragleave', () => {
-    uploadArea.style.background = '#f8f9fa';
-    uploadArea.style.borderColor = '#1a6b7e';
+    uploadArea.style.background = 'var(--alice-blue)';
+    uploadArea.style.borderColor = 'var(--verdigris)';
   });
 
   uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    uploadArea.style.background = '#f8f9fa';
-    uploadArea.style.borderColor = '#1a6b7e';
+    uploadArea.style.background = 'var(--alice-blue)';
+    uploadArea.style.borderColor = 'var(--verdigris)';
     handleFileUpload(e.dataTransfer.files[0]);
   });
 

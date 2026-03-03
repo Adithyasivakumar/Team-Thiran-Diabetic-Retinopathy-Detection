@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>{% block title %}Team Thiran - DR Detection{% endblock %}</title>
+  <title>{% block title %}Retinex AI - DR Detection{% endblock %}</title>
   <meta name="description" content="AI-Powered Diabetic Retinopathy Detection System">
 
   <!-- Favicon -->
@@ -20,29 +20,6 @@
 
   <!-- Doclab CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='doclab_css/style.css') }}">
-
-  <!-- Custom CSS for Team Thiran -->
-  <style>
-    :root {
-      --rich-black-fogra-29: hsl(222, 44%, 8%);
-      --middle-blue-green_40: hsla(174, 64%, 71%, 0.4);
-      --midnight-green: hsl(186, 100%, 19%);
-      --midnight-green_a25: hsla(186, 100%, 19%, 0.25);
-      --independece: hsl(236, 14%, 39%);
-      --verdigris: hsl(182, 100%, 35%);
-      --ming: hsl(186, 72%, 24%);
-      --space-cadet: hsla(226, 45%, 24%);
-      --gunmetal: hsl(222, 12%, 25%);
-      --light-gray: hsl(0, 0%, 95%);
-      --white: hsl(0, 0%, 100%);
-    }
-    
-    .team-thiran-logo {
-      font-weight: 700;
-      color: var(--verdigris);
-      letter-spacing: 1px;
-    }
-  </style>
 
   {% block extra_css %}{% endblock %}
 </head>
@@ -58,14 +35,14 @@
   <header class="header" data-header>
     <div class="container">
 
-      <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo team-thiran-logo">
-        Team Thiran DR
+      <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo" style="color: var(--white); font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px;">
+        Retinex AI
       </a>
 
       <nav class="navbar" data-navbar>
         <div class="navbar-top">
-          <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo team-thiran-logo">
-            Team Thiran DR
+          <a href="{{ url_for('dashboard') if session.get('username') else url_for('login') }}" class="logo" style="color: var(--white); font-weight: 700; font-size: 1.3rem; letter-spacing: 0.5px;">
+            Retinex AI
           </a>
           <button class="nav-close-btn" aria-label="close menu" data-nav-toggler>
             <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
@@ -114,7 +91,7 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <p class="footer-list-title title-md">Team Thiran</p>
+          <p class="footer-list-title title-md">Retinex AI</p>
           <p class="footer-text">
             Advanced Diabetic Retinopathy Detection using Artificial Intelligence
           </p>
@@ -140,7 +117,7 @@
 
       <div class="footer-bottom">
         <p class="text copyright">
-          &copy; Team Thiran 2026 | AI-Powered DR Detection System
+          &copy; 2026 Retinex AI by Team Thiran | AI-Powered DR Detection
         </p>
       </div>
     </div>
