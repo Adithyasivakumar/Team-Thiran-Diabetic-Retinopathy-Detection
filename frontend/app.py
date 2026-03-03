@@ -6,6 +6,7 @@ This is a separate interface to the backend. The original Tkinter GUI (blindness
 import os
 import sys
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_file
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import timedelta
@@ -32,6 +33,12 @@ app.secret_key = os.getenv('SECRET_KEY', 'team-thiran-secret-key-medical-app')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+
+# Enable CORS for API endpoints (allows Loveable frontend to communicate)
+CORS(app, resources={
+    r"/api/*": {"origins": "*"},  # Allow all origins for API endpoints
+    r"/download-report/*": {"origins": "*"}
+})
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
